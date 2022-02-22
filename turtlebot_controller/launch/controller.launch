@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <include file="$(find turtlebot_interface)/launch/interface.launch" />
+    <!--include file="$(find turtlebot_interface)/launch/interface.launch" /-->
 
-    <!--include file="$(find pid)/launch/sim_time.launch"/>
+    <!--include file="$(find pid)/launch/sim_time.launch"/-->
     <arg name="model" default="$(find turtlebot_description)/robots/kobuki_hexagons_astra.urdf.xacro"/>
     <param command="$(find xacro)/xacro $(arg model)" name="robot_description"/>
     
@@ -20,7 +20,7 @@
         args="-z 1.0 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen"/>
-    <node name="interface" pkg="turtlebot_interface" type="interface" output="screen"/-->
+    <node name="interface" pkg="turtlebot_interface" type="interface" output="screen"/>
   
 
 </launch>

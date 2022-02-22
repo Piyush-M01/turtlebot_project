@@ -4,8 +4,8 @@ using namespace std;
 
 Pidcontrol::Pidcontrol(ros::NodeHandle &nh)
 {
-    this->pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    this->sub = nh.subscribe<nav_msgs::Odometry>("/odom", 100, &Pidcontrol::OdomCB, this);
+    this->pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
+    this->sub = nh.subscribe<nav_msgs::Odometry>("/odom", 10, &Pidcontrol::OdomCB, this);
     this->prev_error=0;
     this->prev_theta_err=0;
     this->integral_dist=0;
@@ -45,26 +45,28 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
     double d_angle=kd_angle*(abs(theta_err-this->prev_theta_err));
     double i_angle=ki_angle*this->integral_angle;
 
-    //printf("distance error %f \n",distance_err);
+    printf("distance error %f \n",distance_err);
 
-    if(abs(theta_err)>0.1)
+    if(abs(theta_err)>0.05 && !is_fixed)
     {
         double gain=p_angle+d_angle+i_angle;
-         if(gain>0.05)
-         {
-             speed.angular.z=0.05;
-         }
-         else
-            speed.angular.z=gain-(gain-0.06);
+        if (abs(gain)>0.08)
+        speed.angular.z=0.08;
+        else
+        speed.angular.z=gain;
     }
-    if(abs(theta_err)<=0.1)
+    else
     {
-        speed.angular.z = 0;
+        if(abs(theta_err)>0.06)
+        is_fixed=false;
+        else
+        is_fixed=true;
+        speed.angular.z=0;
+
         if(distance_err>0.1)
         { 
            if(p_dist+i_dist+d_dist-this->prev_vel<acc_max)
             {
-                speed.angular.y=0;
                 if(p_dist+ i_dist+ d_dist<vel_max && p_dist+i_dist+d_dist>vel_min)
                     {
                         speed.linear.x=p_dist+i_dist+d_dist;
@@ -80,18 +82,25 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
             }
             else
             {
-                speed.angular.y=0;
                 speed.linear.x=acc_max;
             }
         }
         else
         {
-            speed.angular.z=0;
             speed.linear.x=0;
         }
-    }   
+    }
+
+    if(distance_err<0.1 && abs(theta_err)<0.05)
+    {
+        speed.linear.x=0.0;
+        speed.angular.z=0.0;
+        this->pub.publish(speed);
+        ros::shutdown();
+    }
+
+    this->pub.publish(speed);  
     this->prev_error=distance_err;
     this->prev_theta_err=theta_err;
-    this->pub.publish(speed); 
 }
 

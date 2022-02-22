@@ -17,10 +17,11 @@ class Pidcontrol
     void OdomCB(const nav_msgs::Odometry::ConstPtr& ptr);
 
     protected:
-    double kp=0.5,kd=0.02,ki=0.05,x=-1,y=-1,integral_dist;
-    double theta,integral_angle,kp_angle=0.05,kd_angle=0.002,ki_angle=0.005;
+    double kp=0.5,kd=0.02,ki=0.05,x=-1,y=1,integral_dist;
+    double theta,integral_angle,kp_angle=0.016,kd_angle=0.005,ki_angle=0.003;
     double prev_error,prev_vel=0,prev_theta_err;
     double vel_max = 0.1,acc_max = 0.1,vel_min = 0.05;
+    bool is_fixed=false;
 
     private:
     ros::Publisher pub;
