@@ -8,7 +8,6 @@ Pidcontrol::Pidcontrol(ros::NodeHandle &nh)
     this->sub = nh.subscribe<nav_msgs::Odometry>("/odom", 100, &Pidcontrol::OdomCB, this);
     this->prev_error=0;
     this->prev_theta_err=0;
-    //this->prev_time=0;
     this->integral_dist=0;
     this->integral_angle=0;
 }
@@ -18,7 +17,7 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
     //this->kp=0.4;
     //nh.getParam("/my_robot/p_gain",this->kp);
     //nh.getParam("/my_robot/i_gain",this->ki);
-    nh.getParam("/my_robot/d_gain",this->kd);
+    //nh.getParam("/my_robot/d_gain",this->kd);
 
     double roll,pitch,yaw;
     geometry_msgs::Twist speed;
@@ -42,21 +41,25 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
 
     //fixing angular error
     this->integral_angle=this->integral_angle+theta_err;
-    double p_angle=kp*theta_err;
-    double d_angle=kd*((theta_err-this->prev_theta_err));
-    double i_angle=ki*this->integral_angle;
+    double p_angle=kp_angle*theta_err;
+    double d_angle=kd_angle*(abs(theta_err-this->prev_theta_err));
+    double i_angle=ki_angle*this->integral_angle;
 
-    printf("distance error %f \n",distance_err);
+    //printf("distance error %f \n",distance_err);
 
     if(abs(theta_err)>0.1)
-        {
-            speed.angular.z=0.08;
-        }
-        //speed.angular.z=(p_angle+i_angle+d_angle);
-    else
+    {
+        double gain=p_angle+d_angle+i_angle;
+         if(gain>0.05)
+         {
+             speed.angular.z=0.05;
+         }
+         else
+            speed.angular.z=gain-(gain-0.06);
+    }
+    if(abs(theta_err)<=0.1)
     {
         speed.angular.z = 0;
-        this->theta=0;
         if(distance_err>0.1)
         { 
            if(p_dist+i_dist+d_dist-this->prev_vel<acc_max)
@@ -65,33 +68,29 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
                 if(p_dist+ i_dist+ d_dist<vel_max && p_dist+i_dist+d_dist>vel_min)
                     {
                         speed.linear.x=p_dist+i_dist+d_dist;
-                        cout<<"between"<<speed.linear.x<<"\n";
                     }
                 else if(p_dist+ i_dist+ d_dist>vel_max)
                 {
                     speed.linear.x = vel_max;
-                    cout<<"greater"<<speed.linear.x<<"\n";
                 }
                 else
                 {
                     speed.linear.x  =  vel_min;
-                    cout<<"smaller"<<speed.linear.x<<"\n";
                 }
             }
             else
             {
                 speed.angular.y=0;
                 speed.linear.x=acc_max;
-                cout<<"greater than amax"<<speed.linear.x<<"\n";
             }
         }
         else
         {
+            speed.angular.z=0;
             speed.linear.x=0;
         }
     }   
     this->prev_error=distance_err;
-    //this->prev_time=time;
     this->prev_theta_err=theta_err;
     this->pub.publish(speed); 
 }
