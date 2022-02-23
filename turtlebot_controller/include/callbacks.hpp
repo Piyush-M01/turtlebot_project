@@ -22,7 +22,7 @@ double Pidcontrol::distance_PID(double distance_err)
     return gain;
 }
 
-void Pidcontrol::fix_angle(double gain)
+void Pidcontrol::angular_constraint(double gain)
 {
     if (abs(gain)>0.08)
     this->speed.angular.z=0.08;
@@ -74,27 +74,22 @@ void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
 
     printf("distance error %f \n",distance_err);
 
-    if(abs(theta_err)>0.05 && !is_fixed)
+    if(abs(theta_err)>0.05)
     {
-        fix_angle(angle_PID(theta_err));
+        angular_constraint(angle_PID(theta_err));
     }
     else
     {
-        if(abs(theta_err)>0.06)
-        is_fixed=false;
-        else
-        is_fixed=true;
-        this->speed.angular.z=0;
-
-        if(distance_err>0.1)
-        { 
-           double pid_dist=distance_PID(distance_err);
-           fix_distance(pid_dist);
-        }
-        else
-        {
-            speed.linear.x=0;
-        }
+        speed.angular.z=0;
+    }
+    if(distance_err>0.1)
+    { 
+    double pid_dist=distance_PID(distance_err);
+    fix_distance(pid_dist);
+    }
+    else
+    {
+        speed.linear.x=0;
     }
 
     if(distance_err<0.1 && abs(theta_err)<0.05)
