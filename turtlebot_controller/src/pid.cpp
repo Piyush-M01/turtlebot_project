@@ -1,5 +1,7 @@
 #include<iostream>
 #include "../include/pid.hpp"
+#include "../include/callbacks.hpp"
+
 using namespace std;
 
 Pidcontrol::Pidcontrol(ros::NodeHandle &nh)
@@ -11,96 +13,3 @@ Pidcontrol::Pidcontrol(ros::NodeHandle &nh)
     this->integral_dist=0;
     this->integral_angle=0;
 }
-void Pidcontrol::OdomCB(const nav_msgs::Odometry::ConstPtr& msg)
-{
-    ros::NodeHandle nh;
-    //this->kp=0.4;
-    //nh.getParam("/my_robot/p_gain",this->kp);
-    //nh.getParam("/my_robot/i_gain",this->ki);
-    //nh.getParam("/my_robot/d_gain",this->kd);
-
-    double roll,pitch,yaw;
-    geometry_msgs::Twist speed;
-    tf::Quaternion quat;
-    tf::quaternionMsgToTF(msg->pose.pose.orientation,quat);
-    tf::Matrix3x3(quat).getRPY(roll,pitch,yaw);
-
-    double distance_err= sqrt(pow(this->x-msg->pose.pose.position.x,2)+pow(this->y-msg->pose.pose.position.y,2));
-    this->theta=atan2(this->y-msg->pose.pose.position.y,this->x-msg->pose.pose.position.x);
-
-    //fixing distance error first
-
-    this->integral_dist=this->integral_dist+distance_err;
-
-    double p_dist=kp*distance_err;
-    double d_dist=kd*(distance_err-this->prev_error);
-    double i_dist=ki*this->integral_dist;
-
-    double theta_err=this->theta-yaw;
-    printf("theta_err: %f \n",theta_err);
-
-    //fixing angular error
-    this->integral_angle=this->integral_angle+theta_err;
-    double p_angle=kp_angle*theta_err;
-    double d_angle=kd_angle*(abs(theta_err-this->prev_theta_err));
-    double i_angle=ki_angle*this->integral_angle;
-
-    printf("distance error %f \n",distance_err);
-
-    if(abs(theta_err)>0.05 && !is_fixed)
-    {
-        double gain=p_angle+d_angle+i_angle;
-        if (abs(gain)>0.08)
-        speed.angular.z=0.08;
-        else
-        speed.angular.z=gain;
-    }
-    else
-    {
-        if(abs(theta_err)>0.06)
-        is_fixed=false;
-        else
-        is_fixed=true;
-        speed.angular.z=0;
-
-        if(distance_err>0.1)
-        { 
-           if(p_dist+i_dist+d_dist-this->prev_vel<acc_max)
-            {
-                if(p_dist+ i_dist+ d_dist<vel_max && p_dist+i_dist+d_dist>vel_min)
-                    {
-                        speed.linear.x=p_dist+i_dist+d_dist;
-                    }
-                else if(p_dist+ i_dist+ d_dist>vel_max)
-                {
-                    speed.linear.x = vel_max;
-                }
-                else
-                {
-                    speed.linear.x  =  vel_min;
-                }
-            }
-            else
-            {
-                speed.linear.x=acc_max;
-            }
-        }
-        else
-        {
-            speed.linear.x=0;
-        }
-    }
-
-    if(distance_err<0.1 && abs(theta_err)<0.05)
-    {
-        speed.linear.x=0.0;
-        speed.angular.z=0.0;
-        this->pub.publish(speed);
-        ros::shutdown();
-    }
-
-    this->pub.publish(speed);  
-    this->prev_error=distance_err;
-    this->prev_theta_err=theta_err;
-}
-

@@ -2,7 +2,6 @@
 <launch>
     <!--include file="$(find turtlebot_interface)/launch/interface.launch" /-->
 
-    <!--include file="$(find pid)/launch/sim_time.launch"/-->
     <arg name="model" default="$(find turtlebot_description)/robots/kobuki_hexagons_astra.urdf.xacro"/>
     <param command="$(find xacro)/xacro $(arg model)" name="robot_description"/>
     
