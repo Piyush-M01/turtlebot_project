@@ -1,0 +1,24 @@
+parameters:
+
+  publisher:/cmd_vel  
+
+  subscriber:/odom
+
+  kp_angle:0
+  kd_angle:0
+  ki_angle:0
+  
+  kp_distance:0
+  kd_distance:0
+  ki_distance:0
+
+  angle_velocity_min:0
+  angle_velocity_max:0
+  angle_acceleration_max:0
+
+  distance_velocity_min:0
+  distance_velocity_max:0
+  distance_acceleration_max:0
+
+  setpoint_x:0
+  setpoint_y:0
