@@ -40,9 +40,11 @@ namespace PID
     class pid
     {
         public:
-                    
+            bool goal;
             double x,y;
             void callbacks(const nav_msgs::Odometry::ConstPtr& msg);
+            void getParameters();
+            void compute(double theta_error,double distance_error, double linear_velocity, double angular_velocity);
             pid(ros::NodeHandle &nh);
             
             

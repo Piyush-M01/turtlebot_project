@@ -4,6 +4,8 @@
 PID::pid::pid(ros::NodeHandle &nh)
 {
     //to intialize the parameters
+    this->goal=false;
+
     this->angle.kp = 0.01;
     this->angle.kd = 0.005;
     this->angle.ki = 0.0002;
@@ -23,6 +25,6 @@ PID::pid::pid(ros::NodeHandle &nh)
     this->angle_err.integral_error = 0.0;
 
 
-    this->pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    this->sub = nh.subscribe<nav_msgs::Odometry>("/odom", 100, &PID::pid::callbacks, this);
+    this->pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 120);
+    this->sub = nh.subscribe<nav_msgs::Odometry>("/odom",120, &PID::pid::callbacks, this);
 }

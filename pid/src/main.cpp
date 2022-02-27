@@ -51,6 +51,5 @@ int main(int argc, char* argv[])
     nh.setParam("setpoint_x",x);
     nh.setParam("setpoint_y",y);
     
-    ros::Rate loop_rate(100);
     ros::spin();
 }
