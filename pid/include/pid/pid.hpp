@@ -1,7 +1,5 @@
 #ifndef _PID_HPP_
 #define _PID_HPP_
-
-
 #include <iostream>
 #include "ros/ros.h"
 #include <tf/tf.h>

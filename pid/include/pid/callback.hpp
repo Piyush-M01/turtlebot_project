@@ -38,6 +38,7 @@ void PID::pid::compute(double theta_error,double distance_error, double linear_v
 {
     if(abs(theta_error) > 0.1)
     {
+        this->speed.linear.x=0;
         if(angular_velocity > this->angle.velocity_max)
             this->speed.angular.z = this->angle.velocity_max;
         else
@@ -45,6 +46,7 @@ void PID::pid::compute(double theta_error,double distance_error, double linear_v
     }
     else
     {
+        std::cout<<"here\n";
         this->speed.angular.z = 0;
         if(distance_error>0.1)
         {
@@ -104,9 +106,9 @@ void PID::pid::callbacks(const nav_msgs::Odometry::ConstPtr& msg)
     this->angle_err.previous_error = theta_error;
 
 
-    //std::cout<<"theta: "<<theta<<std::endl;
-    //std::cout<<"theta_error: "<<theta_error<<std::endl;
-    //std::cout<<"yaw: "<<yaw<<std::endl;
+    std::cout<<"theta: "<<theta<<std::endl;
+    std::cout<<"theta_error: "<<theta_error<<std::endl;
+    std::cout<<"yaw: "<<yaw<<std::endl;
     
     compute(theta_error,distance_error,linear_velocity,angular_velocity);
 
