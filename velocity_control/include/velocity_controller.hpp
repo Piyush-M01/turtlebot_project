@@ -41,7 +41,7 @@ namespace velocityController
             void odom(const nav_msgs::Odometry::ConstPtr& msg);
             void getParameters();
             void compute(double refrence_linear_velocity, double refrence_angular_velocity);
-            pid(ros::NodeHandle &nh);
+            velocity_state_controller(ros::NodeHandle &nh);
             
             
             geometry_msgs::Twist speed;
