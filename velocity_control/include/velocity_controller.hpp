@@ -8,6 +8,7 @@
 #include <nav_msgs/Odometry.h>
 #include <math.h>
 #include <bits/stdc++.h>
+#include "realtime_tools/realtime_publisher.h"
 
 
 typedef struct PARAMETERS
@@ -46,7 +47,8 @@ namespace velocityController
             void getParameters();
             void compute(double refrence_linear_velocity, double refrence_angular_velocity);
             velocity_state_controller(const ros::NodeHandlePtr &nh);
-    
+            void controlLoop(const ros::TimerEvent& event);
+
         private:
 
             double linear_ref, angular_ref;
@@ -55,7 +57,12 @@ namespace velocityController
 
             ros::Subscriber sub;
             ros::Subscriber goalSub;
-            ros::Publisher pub;
+            // ros::Publisher pub; //convert to realtime publisher
+
+            realtime_tools::RealtimePublisherSharedPtr<geometry_msgs::Twist> pub;
+
+            ros::Timer control_timer;
+            double control_rate;
 
             parameters angular_velocity;
             error angular;

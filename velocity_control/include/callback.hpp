@@ -33,9 +33,15 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     }
 
     
-    speed.angular.z=angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered));
-    speed.linear.x=linear_velocity.kp*linear.velocity_error + (linear_velocity.ki*linear.integral_error) + (linear_velocity.kd*(linear_velocity.diff_filtered));
+    //speed.angular.z=angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered));
+    //speed.linear.x=linear_velocity.kp*linear.velocity_error + (linear_velocity.ki*linear.integral_error) + (linear_velocity.kd*(linear_velocity.diff_filtered));
 
+    if(pub->trylock())
+    {
+        pub->msg_.angular.z=angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered));
+        pub->msg_.linear.x=linear_velocity.kp*linear.velocity_error + (linear_velocity.ki*linear.integral_error) + (linear_velocity.kd*(linear_velocity.diff_filtered));
+        pub->unlockAndPublish();
+    }
 
     angular.integral_error += angular.velocity_error;
     linear.integral_error += linear.velocity_error;
@@ -43,8 +49,7 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     linear.previous_error = linear.velocity_error;
     angular.previous_error = angular.velocity_error;
 
-    pub.publish(speed);
-  
+
 }
 
 void velocity_state_controller::odom(const nav_msgs::Odometry::ConstPtr& msg)
@@ -52,11 +57,17 @@ void velocity_state_controller::odom(const nav_msgs::Odometry::ConstPtr& msg)
     this->measured_linear_velocity=msg->twist.twist.linear.x;
     this->measured_angular_velocity=msg->twist.twist.angular.z;
 
-    compute(linear_ref,angular_ref);
+    //dynamic reconfigure for kp, ki, kd
+
 }
 
 void velocity_state_controller::goal(const geometry_msgs::Twist::ConstPtr& msg)
 {
     this->linear_ref = msg->linear.x;
     this->angular_ref = msg->angular.z;
+}
+
+void velocity_state_controller::controlLoop(const ros::TimerEvent& event)
+{
+    compute(linear_ref, angular_ref);
 }
