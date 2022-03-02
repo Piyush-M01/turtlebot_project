@@ -1,12 +1,11 @@
 velocity:
-  linear_velocity:0
-  angular_velocity:0
-  
-  kp_angle:0.05
-  ki_angle:0.005
-  kd_angle:0.0002
-
-  kp_distance:0.4
-  ki_distance:0.05
-  kd_distance:0.002
-  
+  linear:
+    kp: 0.1
+    ki: 0.0
+    kd: 0.0
+    max: 0.5
+  angular:
+    kp: 0.005
+    ki: 0.0005
+    kd: 0.00002
+    max: 0.5

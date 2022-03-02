@@ -19,5 +19,8 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen"/>
     <node name="interface" pkg="turtlebot_interface" type="interface" output="screen"/>
 
-    <rosparam file = "$(find pid)/cfg/parameters.yaml"/>
+    <rosparam file = "$(find velocity_control)/cfg/velocity.yaml" command="load"/>
+
+    <node name="velocity_controller" pkg="velocity_control" type="velocity_controller" output="screen"/>
+
 </launch>

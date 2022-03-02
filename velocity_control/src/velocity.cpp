@@ -1,16 +1,29 @@
 #include "../include/velocity_controller.hpp"
 #include "../include/callback.hpp"
 
-velocityController::velocity_state_controller::velocity_state_controller(ros::NodeHandle &nh)
+using namespace velocityController;
+
+velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_nh)
 {
-    this->angular_velocity.previous_state=0;
-    this->angular.previous_error=0;
-    this->angular.integral_error=0;
+    angular_velocity.previous_state=0;
+    angular.previous_error=0;
+    angular.integral_error=0;
 
-    this->velocity.previous_state=0;
-    this->velocity_error.previous_error=0;
-    this->velocity_error.integral_error=0;
+    linear_velocity.previous_state=0;
+    linear.previous_error=0;
+    linear.integral_error=0;
 
-    this->pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    this->sub = nh.subscribe<nav_msgs::Odometry>("/odom",100, &velocityController::velocity_state_controller::odom, this);
+    pub = _nh->advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    sub = _nh->subscribe<nav_msgs::Odometry>("/odom", 100, &velocity_state_controller::odom,this);
+    goalSub = _nh->subscribe<geometry_msgs::Twist>("/cmd_vel_filtered", 100, &velocity_state_controller::goal, this);
+
+    _nh->getParam("/velocity/linear/kp",linear_velocity.kp);
+    _nh->getParam("/velocity/linear/ki",linear_velocity.ki);
+    _nh->getParam("/velocity/linear/kd",linear_velocity.kd);
+    _nh->getParam("/velocity/linear/max",linear_velocity.velocity_max);
+    
+    _nh->getParam("/velocity/angular/kp",angular_velocity.kp);
+    _nh->getParam("/velocity/angular/ki",angular_velocity.ki);
+    _nh->getParam("/velocity/angular/kd",angular_velocity.kd);
+    _nh->getParam("/velocity/angular/max",angular_velocity.velocity_max);
 }
