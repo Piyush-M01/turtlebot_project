@@ -14,7 +14,7 @@ velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_
     linear.integral_error=0;
 
     // pub = _nh->advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    pub = boost::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::Twist>>(_nh.get(),"/cmd_vel", 10);
+    pub = std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::Twist>>(*_nh.get(),"/cmd_vel", 10);
     sub = _nh->subscribe<nav_msgs::Odometry>("/odom", 100, &velocity_state_controller::odom,this);
     goalSub = _nh->subscribe<geometry_msgs::Twist>("/cmd_vel_filtered", 100, &velocity_state_controller::goal, this);
 
