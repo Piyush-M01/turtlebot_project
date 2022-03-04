@@ -9,7 +9,8 @@
 #include <math.h>
 #include <bits/stdc++.h>
 #include "realtime_tools/realtime_publisher.h"
-
+#include <dynamic_reconfigure/server.h>
+#include <velocity_control/dynamicConfig.h>
 
 typedef struct PARAMETERS
 {

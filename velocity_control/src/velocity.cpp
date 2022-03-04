@@ -1,5 +1,7 @@
 #include "../include/velocity_controller.hpp"
 #include "../include/callback.hpp"
+#include <dynamic_reconfigure/server.h>
+#include <velocity_control/dynamicConfig.h>
 
 using namespace velocityController;
 
@@ -22,13 +24,22 @@ velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_
 
     control_timer = _nh->createTimer(ros::Duration(control_rate), &velocity_state_controller::controlLoop, this);
 
-    _nh->getParam("/velocity/linear/kp",linear_velocity.kp);
-    _nh->getParam("/velocity/linear/ki",linear_velocity.ki);
-    _nh->getParam("/velocity/linear/kd",linear_velocity.kd);
+    _nh->getParam("/velocity_controller/kp_linear",linear_velocity.kp);
+    _nh->getParam("/velocity_controller/ki_linear",linear_velocity.ki);
+    _nh->getParam("/velocity_controller/kd_linear",linear_velocity.kd);
     _nh->getParam("/velocity/linear/max",linear_velocity.velocity_max);
     
-    _nh->getParam("/velocity/angular/kp",angular_velocity.kp);
-    _nh->getParam("/velocity/angular/ki",angular_velocity.ki);
-    _nh->getParam("/velocity/angular/kd",angular_velocity.kd);
+    _nh->getParam("/velocity_controller/kp_angular",angular_velocity.kp);
+    _nh->getParam("/velocity_controller/ki_angular",angular_velocity.ki);
+    _nh->getParam("/velocity_controller/kd_angular",angular_velocity.kd);
     _nh->getParam("/velocity/angular/max",angular_velocity.velocity_max);
+}
+
+
+void callback(velocity_control::dynamicConfig &config, uint32_t level) {
+//   ROS_INFO("Reconfigure Request: %d %f %s %s %d", 
+//             config.int_param, config.double_param, 
+//             config.str_param.c_str(), 
+//             config.bool_param?"True":"False", 
+//             config.size);
 }
