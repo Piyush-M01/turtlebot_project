@@ -1,8 +1,8 @@
 velocity:
   linear:
-    kp: 0.0
-    ki: 0.0
-    kd: 0.0
+    kp: 0.5
+    ki: 0.001
+    kd: 0.0005
     max: 0.5
   angular:
     kp: 0.0

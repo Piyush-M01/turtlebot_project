@@ -58,6 +58,7 @@ namespace velocityController
 
             ros::Subscriber sub;
             ros::Subscriber goalSub;
+            ros::NodeHandlePtr nh;
             // ros::Publisher pub; //convert to realtime publisher
 
             realtime_tools::RealtimePublisherSharedPtr<geometry_msgs::Twist> pub;

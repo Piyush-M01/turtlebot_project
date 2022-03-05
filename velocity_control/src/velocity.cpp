@@ -15,6 +15,9 @@ velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_
     linear.previous_error=0;
     linear.integral_error=0;
 
+    linear_velocity.diff_filtered = 0;
+    angular_velocity.diff_filtered = 0;
+
     // pub = _nh->advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     pub = std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::Twist>>(*_nh.get(),"/cmd_vel", 10);
     sub = _nh->subscribe<nav_msgs::Odometry>("/odom", 100, &velocity_state_controller::odom,this);
@@ -24,15 +27,11 @@ velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_
 
     control_timer = _nh->createTimer(ros::Duration(control_rate), &velocity_state_controller::controlLoop, this);
 
-    _nh->getParam("/velocity_controller/kp_linear",linear_velocity.kp);
-    _nh->getParam("/velocity_controller/ki_linear",linear_velocity.ki);
-    _nh->getParam("/velocity_controller/kd_linear",linear_velocity.kd);
     _nh->getParam("/velocity/linear/max",linear_velocity.velocity_max);
     
-    _nh->getParam("/velocity_controller/kp_angular",angular_velocity.kp);
-    _nh->getParam("/velocity_controller/ki_angular",angular_velocity.ki);
-    _nh->getParam("/velocity_controller/kd_angular",angular_velocity.kd);
     _nh->getParam("/velocity/angular/max",angular_velocity.velocity_max);
+
+    nh=_nh;
 }
 
 
