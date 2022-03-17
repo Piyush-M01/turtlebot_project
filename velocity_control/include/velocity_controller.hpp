@@ -12,6 +12,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <velocity_control/dynamicConfig.h>
 
+
 typedef struct PARAMETERS
 {
     double kp;
@@ -49,7 +50,7 @@ namespace velocityController
             void compute(double refrence_linear_velocity, double refrence_angular_velocity);
             velocity_state_controller(const ros::NodeHandlePtr &nh);
             void controlLoop(const ros::TimerEvent& event);
-
+            //ros::NodeHandle nh;
         private:
 
             double linear_ref, angular_ref;

@@ -7,19 +7,28 @@ using namespace velocityController;
 void velocity_state_controller::compute(double refrence_linear_velocity, double refrence_angular_velocity)
 {
 
+
     angular.velocity_error = refrence_angular_velocity - measured_angular_velocity;
     linear.velocity_error = refrence_linear_velocity - measured_linear_velocity;
         
     angular_velocity.diff = angular.velocity_error - angular.previous_error;
     linear_velocity.diff = linear.velocity_error - linear.previous_error;
 
-    angular_velocity.diff_filtered=pow((1+(1/angular_velocity.diff)),2)/((2+sqrt(2))+((2-sqrt(2))*pow((1/angular_velocity.diff),2)));
-    linear_velocity.diff_filtered=pow((1+(1/linear_velocity.diff)),2)/((2+sqrt(2))+((2-sqrt(2))*pow((1/linear_velocity.diff),2)));
+    if((angular_velocity.diff>0 && angular_velocity.diff>0.0005) || (angular_velocity.diff<0 && angular_velocity.diff<-0/0.0005))
+    {
+        std::cout<<"i was here"<<angular_velocity.diff<<"\n";
+        
+        angular_velocity.diff_filtered=pow((1+(1/angular_velocity.diff)),2)/((2+sqrt(2))+((2-sqrt(2))*pow((1/angular_velocity.diff),2)));
+    }
+    if(linear_velocity.diff!=0)
+        linear_velocity.diff_filtered=pow((1+(1/linear_velocity.diff)),2)/((2+sqrt(2))+((2-sqrt(2))*pow((1/linear_velocity.diff),2)));
 
-
+    std::cout<<"idk"<<angular_velocity.diff_filtered<<"\n";
     angular_velocity.integral_max = (angular_velocity.velocity_max - angular_velocity.kp*angular.velocity_error - angular_velocity.kd*angular_velocity.diff_filtered)/angular_velocity.ki;
 
-    
+    angular.integral_error += angular.velocity_error;
+    linear.integral_error += linear.velocity_error;
+
     if(angular.integral_error>angular_velocity.integral_max)
     {
         angular.integral_error = angular_velocity.integral_max;
@@ -31,6 +40,7 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     {
         linear.integral_error = linear_velocity.integral_max;
     }
+    std::cout<<"error is "<<refrence_linear_velocity<<" "<<measured_linear_velocity<<"\n";
 
     
     //speed.angular.z=angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered));
@@ -43,8 +53,6 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
         pub->unlockAndPublish();
     }
 
-    angular.integral_error += angular.velocity_error;
-    linear.integral_error += linear.velocity_error;
 
     linear.previous_error = linear.velocity_error;
     angular.previous_error = angular.velocity_error;
