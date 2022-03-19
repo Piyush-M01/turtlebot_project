@@ -20,6 +20,7 @@
     <node name="interface" pkg="turtlebot_interface" type="interface" output="screen"/>
 
     <rosparam file = "$(find velocity_control)/cfg/velocity.yaml" command="load"/>
+
     <node name="velocity_controller" pkg="velocity_control" type="velocity_controller" output="screen"/>
 
 </launch>

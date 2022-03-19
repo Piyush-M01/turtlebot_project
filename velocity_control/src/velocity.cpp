@@ -27,10 +27,15 @@ velocity_state_controller::velocity_state_controller(const ros::NodeHandlePtr &_
 
     control_timer = _nh->createTimer(ros::Duration(control_rate), &velocity_state_controller::controlLoop, this);
 
+    _nh->getParam("/velocity/linear/kp",linear_velocity.kp);
+    _nh->getParam("/velocity/linear/ki",linear_velocity.ki);
+    _nh->getParam("/velocity/linear/kd",linear_velocity.kd);
     _nh->getParam("/velocity/linear/max",linear_velocity.velocity_max);
     
+    _nh->getParam("/velocity/angular/kp",angular_velocity.kp);
+    _nh->getParam("/velocity/angular/ki",angular_velocity.ki);
+    _nh->getParam("/velocity/angular/kd",angular_velocity.kd);
     _nh->getParam("/velocity/angular/max",angular_velocity.velocity_max);
-
     nh=_nh;
 }
 
