@@ -11,6 +11,7 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
   </include>
+  
 	  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 	
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
@@ -20,6 +21,7 @@
     <node name="interface" pkg="turtlebot_interface" type="interface" output="screen"/>
 
     <rosparam file = "$(find velocity_control)/cfg/velocity.yaml" command="load"/>
-    <node name="velocity_controller" pkg="velocity_control" type="velocity_controller" output="screen"/>
+
+    <!-- <node name="velocity_controller" pkg="velocity_control" type="velocity_controller" output="screen"/> -->
 
 </launch>
