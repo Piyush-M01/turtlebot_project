@@ -1,6 +1,5 @@
-
 cmake_minimum_required(VERSION 3.0.2)
-project(velocity_control)
+project(pid)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -14,8 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   nav_msgs
-  realtime_tools
-  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -93,9 +90,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
- generate_dynamic_reconfigure_options(
-   cfg/dynamic.cfg
- )
+# generate_dynamic_reconfigure_options(
+#   cfg/DynReconf1.cfg
+#   cfg/DynReconf2.cfg
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -108,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES velocity_control
+#  LIBRARIES pid
 #  CATKIN_DEPENDS roscpp rospy
 #  DEPENDS system_lib
 )
@@ -126,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/velocity_control.cpp
+#   src/${PROJECT_NAME}/pid.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,7 +135,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/velocity_control_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/pid_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -201,13 +199,13 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_velocity_control.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pid.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(velocity_controller src/main.cpp)
-target_link_libraries(velocity_controller ${catkin_LIBRARIES})
-add_dependencies(velocity_controller ${catkin_EXPORTED_TARGETS})
+add_executable(control src/main.cpp)
+target_link_libraries(control ${catkin_LIBRARIES})
+add_dependencies(control ${catkin_EXPORTED_TARGETS})

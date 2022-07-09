@@ -4,7 +4,9 @@
 
 using namespace velocityController;
 
-void velocity_state_controller::compute(double refrence_linear_velocity, double refrence_angular_velocity)
+void velocity_state_controller::compute(
+                    double refrence_linear_velocity,
+                    double refrence_angular_velocity)
 {
 
     // nh->getParam("/velocity_controller/kp_linear",linear_velocity.kp);
@@ -15,11 +17,16 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     // nh->getParam("/velocity_controller/ki_angular",angular_velocity.ki);
     // nh->getParam("/velocity_controller/kd_angular",angular_velocity.kd);
 
-    angular.velocity_error = refrence_angular_velocity - measured_angular_velocity;
-    linear.velocity_error = refrence_linear_velocity - measured_linear_velocity;
+
+    angular.velocity_error = refrence_angular_velocity - 
+                    measured_angular_velocity;
+    linear.velocity_error = refrence_linear_velocity - 
+                    measured_linear_velocity;
         
-    angular_velocity.diff = angular.velocity_error - angular.previous_error;
-    linear_velocity.diff = linear.velocity_error - linear.previous_error;
+    angular_velocity.diff = angular.velocity_error - 
+                    angular.previous_error;
+    linear_velocity.diff = linear.velocity_error - 
+                    linear.previous_error;
 
     // if(angular_velocity.diff!=0)
     // {   
@@ -30,7 +37,13 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
 
     // std::cout<<"idk"<<linear_velocity.kp<<"\n";
     angular.integral_error += angular.velocity_error;
-    angular_velocity.integral_max =angular_velocity.integral_max+(angular_velocity.velocity_max - angular_velocity.kp*angular.velocity_error - angular_velocity.kd*angular_velocity.diff_filtered)/angular_velocity.ki;
+    angular_velocity.integral_max =angular_velocity.integral_max+
+                            (angular_velocity.velocity_max - 
+                            angular_velocity.kp*
+                            angular.velocity_error - 
+                            angular_velocity.kd*
+                            angular_velocity.diff_filtered)/
+                            angular_velocity.ki;
 
     
     linear.integral_error += linear.velocity_error;
@@ -40,8 +53,14 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     //     angular.integral_error = angular_velocity.integral_max;
     // }
 
-    linear_velocity.integral_max = linear_velocity.integral_max+(linear_velocity.velocity_max - linear_velocity.kp*linear.velocity_error - linear_velocity.kd*linear_velocity.diff_filtered)/linear_velocity.ki;
-    std::cout<<"max_integral: "<<linear_velocity.integral_max<<"\n";
+    linear_velocity.integral_max = linear_velocity.integral_max+
+                            (linear_velocity.velocity_max - 
+                            linear_velocity.kp*
+                            linear.velocity_error - 
+                            linear_velocity.kd*
+                            linear_velocity.diff_filtered)/
+                            linear_velocity.ki;
+    //std::cout<<"max_integral: "<<linear_velocity.integral_max<<"\n";
 
 
     // if(linear.integral_error>linear_velocity.integral_max)
@@ -52,10 +71,24 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
     //speed.angular.z=angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered));
     //speed.linear.x=linear_velocity.kp*linear.velocity_error + (linear_velocity.ki*linear.integral_error) + (linear_velocity.kd*(linear_velocity.diff_filtered));
 
+
     if(pub->trylock())
     {
-        pub->msg_.angular.z=(measured_angular_velocity+(angular_velocity.kp*angular.velocity_error + (angular_velocity.ki*angular.integral_error) + (angular_velocity.kd*(angular_velocity.diff_filtered))));
-        pub->msg_.linear.x=measured_linear_velocity+(linear_velocity.kp*linear.velocity_error + (linear_velocity.ki*linear.integral_error) + (linear_velocity.kd*(linear_velocity.diff_filtered)));
+        pub->msg_.angular.z=(measured_angular_velocity+
+                        (angular_velocity.kp*
+                        angular.velocity_error + 
+                        (angular_velocity.ki*
+                        angular.integral_error) + 
+                        (angular_velocity.kd*
+                        (angular_velocity.diff_filtered))));
+        pub->msg_.linear.x=measured_linear_velocity+
+                        (linear_velocity.kp*
+                        linear.velocity_error + 
+                        (linear_velocity.ki*
+                        linear.integral_error) +
+                        (linear_velocity.kd*
+                        (linear_velocity.diff_filtered)));
+
         pub->unlockAndPublish();
     }
 
@@ -66,7 +99,8 @@ void velocity_state_controller::compute(double refrence_linear_velocity, double 
 
 }
 
-void velocity_state_controller::odom(const nav_msgs::Odometry::ConstPtr& msg)
+void velocity_state_controller::odom(
+                    const nav_msgs::Odometry::ConstPtr& msg)
 {    
     this->measured_linear_velocity=msg->twist.twist.linear.x;
     this->measured_angular_velocity=msg->twist.twist.angular.z;
@@ -75,13 +109,15 @@ void velocity_state_controller::odom(const nav_msgs::Odometry::ConstPtr& msg)
 
 }
 
-void velocity_state_controller::goal(const geometry_msgs::Twist::ConstPtr& msg)
+void velocity_state_controller::goal(
+                    const geometry_msgs::Twist::ConstPtr& msg)
 {
     this->linear_ref = msg->linear.x;
     this->angular_ref = msg->angular.z;
 }
 
-void velocity_state_controller::controlLoop(const ros::TimerEvent& event)
+void velocity_state_controller::controlLoop(
+                    const ros::TimerEvent& event)
 {
     compute(this->linear_ref, this->angular_ref);
 }
