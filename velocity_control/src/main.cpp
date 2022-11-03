@@ -1,3 +1,6 @@
+//inorder to run pass data using serial communication, connect usb port to STM and start roscore. Then run command: rosrun velocity_control velocity_serial
+
+
 #include<iostream>
 #include "../include/velocity_controller.hpp"
 #include "velocity.cpp"
