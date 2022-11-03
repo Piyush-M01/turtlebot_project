@@ -1,0 +1,12 @@
+velocity:
+  linear:
+    kp: 0.4
+    ki: 0.00005
+    kd: 0.00002
+    max: 0.5
+  angular:
+    kp: 0.08
+    ki: 0.000005
+    kd: 0.0000002
+    max: 0.5
+  control_rate: 0.1
