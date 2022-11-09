@@ -15,7 +15,7 @@
     <arg name="debug" value="false"/>
   </include>
 
-  <include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch"/>
+  <!-- <include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch"/>
   
   <include file="$(find sbg_driver)/launch/sbg_device.launch"/>
   <arg name="scan_topic"  default="scan" />
@@ -60,7 +60,7 @@
     <param name="range_min" value="0.5"/> 
     <remap from="image" to="/camera/depth/image_raw"/> 
     <remap from="scan" to="/scan"/> 
-  </node> 
+  </node>  -->
 	  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 	
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"

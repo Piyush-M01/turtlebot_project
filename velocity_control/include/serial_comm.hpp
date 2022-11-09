@@ -15,11 +15,13 @@ class Serial
 {
     public:
         
-        Serial();
-        void callback(const geometry_msgs::Twist::ConstPtr& msg);
-        int serial_port;
+        Serial(); //constructor
+        void callback(const geometry_msgs::Twist::ConstPtr& msg); //velocity topic callback
+        int serial_port;    //serial port
+        struct termios tty; // Create new termios struct, we call it 'tty' for convention
     private:
-        ros::Subscriber sub;
-        ros::NodeHandle n;  
+        ros::Subscriber sub; //ros subscriber
+        ros::NodeHandle n;  //ros node handler
+        std::string x,z;  //string for linear and angular velocity
 
 };
