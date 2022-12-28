@@ -1,0 +1,25 @@
+<launch>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="model" default="$(find my_robot)/urdf/robot.urdf"/>
+
+  <include file="$(find aws_robomaker_racetrack_world)/launch/racetrack.launch">
+    <arg name="gui" value="true"/>
+  </include>
+  
+
+  <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
+
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />  
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-x 2.75 -y -15.0 -z 1.5 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"/>
+</launch>
